@@ -1,3 +1,347 @@
+HTML
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazing Colors - Reservas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body { background: white; color: black; }
+            .no-print { display: none !important; }
+            .print-card { border: none !important; shadow: none !important; margin: 0 !important; padding: 0 !important; }
+        }
+    </style>
+</head>
+<body class="bg-zinc-50 text-zinc-800 min-h-screen font-sans antialiased pdf-page">
+
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <div class="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm h-fit no-print">
+            <h2 class="text-xl font-semibold tracking-tight text-zinc-900 mb-6 pb-2 border-b border-zinc-100">
+                Captura de Reserva
+            </h2>
+            
+            <form id="reserveForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Nombre del Cliente</label>
+                    <input type="text" id="nombre" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Actividad</label>
+                    <select id="actividad" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                        <option value="">Cargando actividades...</option>
+                    </select>
+                    <input type="text" id="otraActividad" placeholder="Especificar otra actividad" class="hidden mt-2 w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Fecha</label>
+                        <input type="date" id="fecha" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Pax (1-80)</label>
+                        <select id="personas" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                            </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Check In</label>
+                        <select id="checkin" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                            </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Check Point (Lugar)</label>
+                        <input type="text" id="checkpoint" required placeholder="Ej. Marina Imperial" class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Balance (Monto y Divisa)</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="balance" min="1" max="50000" required placeholder="1 - 50000" class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                        <select id="divisa" class="w-24 px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                            <option value="MXN">MXN</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Código de Confirmación</label>
+                    <input type="text" id="confirmacion" readonly class="w-full px-3 py-2 bg-zinc-100 border border-zinc-200 rounded-lg text-sm font-mono text-zinc-600 cursor-not-allowed">
+                </div>
+
+                <div class="pt-2">
+                    <button type="button" onclick="window.print()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm">
+                        Generar PDF / Imprimir
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white p-8 rounded-xl border border-zinc-200 shadow-sm print-card">
+            <div class="flex justify-between items-start border-b border-zinc-200 pb-6 mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-zinc-950">AMAZING COLORS</h1>
+                    <p class="text-xs tracking-widest uppercase text-zinc-400 mt-0.5">Confirmation Voucher</p>
+                </div>
+                <div class="text-right">
+                    <span id="pv-confirmacion" class="inline-block bg-zinc-900 text-white font-mono text-xs font-semibold px-3 py-1 rounded">ACT-XXXXXX-X</span>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Pasajero Principal</p>
+                    <p id="pv-nombre" class="text-base font-semibold text-zinc-900">---</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Actividad contratada</p>
+                    <p id="pv-actividad" class="text-base font-semibold text-zinc-900">---</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Fecha del Servicio</p>
+                        <p id="pv-fecha" class="text-sm font-medium text-zinc-900">---</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Total de Pasajeros</p>
+                        <p id="pv-personas" class="text-sm font-medium text-zinc-900">---</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t border-b border-zinc-100 py-4">
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Horario de Check-in</p>
+                        <p id="pv-checkin" class="text-sm font-medium text-zinc-900">---</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Punto de Encuentro</p>
+                        <p id="pv-checkpoint" class="text-sm font-medium text-zinc-900">---</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center bg-zinc-50 p-4 rounded-lg">
+                    <p class="text-xs font-medium uppercase tracking-wider text-zinc-500">Balance Pendiente</p>
+                    <p id="pv-balance" class="text-lg font-bold text-zinc-950">---</p>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center text-[10px] text-zinc-400 border-t border-zinc-100 pt-4">
+                Amazing Colors Experience S.A.S. de C.V. • Cancún, Quintana Roo, México.
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpCWJlj6HKzh_LIA2SXADpmORKc43sw8U_Eo4pLrirJ9ZP23WwYE6BlyygN-hxqy-QAaLadVeXPkGC/pub?output=tsv';
+
+        // Inicializar elementos de los selectores numéricos y horarios
+        function initFormOptions() {
+            const personasSelect = document.getElementById('personas');
+            for (let i = 1; i <= 80; i++) {
+                let opt = document.createElement('option');
+                opt.value = i; opt.textContent = `${i} ${i === 1 ? 'Persona' : 'Personas'}`;
+                personasSelect.appendChild(opt);
+            }
+
+            const checkinSelect = document.getElementById('checkin');
+            for (let h = 0; h < 24; h++) {
+                for (let m = 0; m < 60; m += 30) {
+                    let hh = h.toString().padStart(2, '0');
+                    let mm = m.toString().padStart(2, '0');
+                    let opt = document.createElement('option');
+                    opt.value = `${hh}:${mm}`; opt.textContent = `${hh}:${mm} hrs`;
+                    checkinSelect.appendChild(opt);
+                }
+            }
+        }
+
+        // Obtener datos del Google Sheet TSV
+        async function fetchActivities() {
+            try {
+                const response = await fetch(TSV_URL);
+                const data = await response.text();
+                const lines = data.split('\n');
+                
+                // Mapear cabeceras para buscar la columna "tipo" (ignorando mayúsculas/minúsculas)
+                const headers = lines[0].split('\t').map(h => h.trim().toLowerCase());
+                const tipoIndex = headers.indexOf('tipo');
+
+                if (tipoIndex === -1) throw new Error('No se encontró la columna "tipo" en el archivo Sheet.');
+
+                const actividades = new Set();
+                for (let i = 1; i < lines.length; i++) {
+                    const columns = lines[i].split('\t');
+                    if (columns[tipoIndex]) {
+                        actividades.add(columns[tipoIndex].trim());
+                    }
+                }
+
+                const actividadSelect = document.getElementById('actividad');
+                actividadSelect.innerHTML = '<option value="">-- Selecciona una Actividad --</option>';
+                actividades.forEach(act => {
+                    let opt = document.createElement('option');
+                    opt.value = act; opt.textContent = act;
+                    actividadSelect.appendChild(opt);
+                });
+                
+                // Añadir opción "Otros"
+                let optOtros = document.createElement('option');
+                optOtros.value = "Otros"; optOtros.textContent = "Otros (Especificar)";
+                actividadSelect.appendChild(optOtros);
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('actividad').innerHTML = '<option value="">Error al cargar actividades</option>';
+            }
+        }
+
+        // Calcular Código de Confirmación Dinámico: ACT-AAMMDD-Pax
+        function generarCodigoConfirmacion() {
+            const fechaVal = document.getElementById('fecha').value;
+            const personasVal = document.getElementById('personas').value;
+            
+            if (!fechaVal) return 'ACT-XXXXXX-' + personasVal;
+
+            // Formatear fecha de YYYY-MM-DD a AAMMDD
+            const partes = fechaVal.split('-'); 
+            const aa = partes[0].substring(2);
+            const mm = partes[1];
+            const dd = partes[2];
+
+            return `ACT-${aa}${mm}${dd}-${personasVal}`;
+        }
+
+        // Sincronizar Formulario con la Vista Previa en tiempo real
+        function syncPreview() {
+            const nombre = document.getElementById('nombre').value || '---';
+            const actividadSelect = document.getElementById('actividad').value;
+            const otraActividad = document.getElementById('otraActividad').value;
+            const fecha = document.getElementById('fecha').value || '---';
+            const personas = document.getElementById('personas').value;
+            const checkin = document.getElementById('checkin').value;
+            const checkpoint = document.getElementById('checkpoint').value || '---';
+            const balance = document.getElementById('balance').value || '0';
+            const divisa = document.getElementById('divisa').value;
+
+            // Manejo de condicional "Otros"
+            const actividadFinal = (actividadSelect === "Otros") ? (otraActividad || 'Otras actividades') : (actividadSelect || '---');
+            
+            if(actividadSelect === "Otros") {
+                document.getElementById('otraActividad').classList.remove('hidden');
+            } else {
+                document.getElementById('otraActividad').classList.add('hidden');
+            }
+
+            const codigo = generarCodigoConfirmacion();
+            document.getElementById('confirmacion').value = codigo;
+
+            // Inyectar en Vista Previa
+            document.getElementById('pv-nombre').textContent = nombre;
+            document.getElementById('pv-actividad').textContent = actividadFinal;
+            document.getElementById('pv-fecha').textContent = fecha;
+            document.getElementById('pv-personas').textContent = `${personas} pax`;
+            document.getElementById('pv-checkin').textContent = `${checkin} hrs`;
+            document.getElementById('pv-checkpoint').textContent = checkpoint;
+            document.getElementById('pv-balance').textContent = `${Number(balance).toLocaleString()} ${divisa}`;
+            document.getElementById('pv-confirmacion').textContent = codigo;
+        }
+
+        // Listeners
+        document.getElementById('reserveForm').addEventListener('input', syncPreview);
+        document.getElementById('actividad').addEventListener('change', syncPreview);
+
+        // Inicialización
+        initFormOptions();
+        fetchActivities();
+    </script>
+</body>
+</html>
+Más de una sola idea para escalar esta App:
+Si quieres que esto no sea solo una interfaz cosmética y realmente agilice tu operación, te dejo tres ideas viables para la siguiente fase de desarrollo:
+
+Persistencia Automatizada (Google Apps Script): En lugar de solo imprimir el PDF, puedes configurar un Webhook sencillo en tu Google Sheet mediante un script de implementación web. Al dar clic al botón, la app mandaría un POST con los datos del formulario directamente a la última fila de la pestaña Amazing Colors Reserva antes de lanzar la ventana de impresión. Cero doble captura.
+
+Uso de Librería de Renderizado (html2pdf.js): El comando window.print() depende mucho de la configuración del navegador del usuario. Integrando la librería html2pdf.js vía CDN, puedes hacer que el botón descargue el archivo PDF de manera nativa en background con dimensiones exactas A4 de diseño editorial, evitando cuadros de diálogo del sistema operativo.
+
+Transiciones Estéticas (GSAP): Como manejas marcas de alto nivel, puedes meterle micro-interacciones con GSAP para que, al momento de cambiar de actividad o modificar los pax, los datos de la "Vista Previa" no cambien de golpe, sino con un sutil fade-in y deslizamiento vertical. Esto eleva la percepción de la herramienta si la usas frente a los clientes en una tablet.
+
+Actividad no carga, esta es la liga del Google sheet:
+
+https://docs.google.com/spreadsheets/d/1NFNkPrPkN2ATZrNfEe6RqJzQTC17i3lq4UKgywJ8O10/edit?usp=sharing
+
+
+
+agrega debajo de balace un conversor de divisas donde si se pone en usd o mxn pueda hacer la converción, usa como datos el tipo de cambio sobre opciones desde 15 hasta 23
+
+cada opción dejara que sea entre 50 centavos, es decir 15, 15.50, 16, 16,50 asi hasta los 23
+
+agrega un generador de código QR el cual al escanearlo de directo a la reserva de pdf 
+
+Tu archivo HTML actualizado ya está listo. He corregido el problema de origen de datos y añadido la conversión de divisas junto con el sistema de código QR dinámico.
+
+Tu archivo de aplicación web listo para descargar:
+Icono de HTML
+ index 
+HTML
+
+🛠️ ¿Por qué no cargaba la actividad y cómo se solucionó?
+El enlace que proporcionaste (https://docs.google.com/spreadsheets/d/.../edit?usp=sharing) es la dirección de edición e interfaz privada de la hoja de cálculo. Un script de navegador convencional no puede leer ese formato directamente debido a restricciones de seguridad de Google.
+
+La solución aplicada:
+Modifiqué la lógica de la aplicación web para que apunte directamente al endpoint de exportación nativo estructurado de Google Drive (/export?format=tsv).
+
+⚠️ REQUISITO INDISPENSABLE: Para que las actividades se listen de forma dinámica en tu aplicación, debes asegurarte de que tu hoja de cálculo esté configurada con el acceso compartido en: "Cualquier persona con el enlace puede ver". Si se mantiene en "Restringido", el navegador bloqueará la lectura y la aplicación activará de inmediato el modo de respaldo (fallback) permitiéndote escribir la actividad manualmente en el campo "Otros".
+
+🔄 Nuevas Características Implementadas en el Código:
+Conversor de Divisas Cruzado (15.00 a 23.00 con pasos de 0.50):
+
+Ubicado exactamente debajo del campo de Balance. El menú desplegable genera de forma automatizada las opciones de medio peso en medio peso.
+
+Lógica inteligente: Si el balance de la reserva está en USD, el sistema multiplica automáticamente por el tipo de cambio seleccionado y te arroja la equivalencia en MXN. Si cambias la divisa base a MXN, hace la operación inversa dividiendo el monto para darte los USD. Ambas cifras se reflejan en tiempo real tanto en el formulario de captura como en la sección informativa del Voucher de vista previa.
+
+Generador de Código QR Dinámico "Escanear Reserva":
+
+¿Cómo funciona de verdad? Al tratarse de una aplicación de procesamiento local en tu navegador (sin base de datos centralizada propia), programé un sistema que codifica todo el estado actual del formulario directamente en los parámetros de la URL nativa de la aplicación.
+
+El resultado en el PDF: El código QR se actualiza en tiempo real mientras escribes en el formulario. Al pulsar el botón de imprimir/guardar PDF, el QR se incrustará de forma fija en la esquina inferior derecha del documento. Cuando el personal en la marina o el cliente escanee ese QR con su teléfono, abrirá de inmediato la aplicación web autorellenando de golpe cada campo exactamente como lo habías guardado, actuando como un validador directo de la reserva.
+
+💡 Un par de ideas retóricas para optimizar tu flujo operativo:
+Sobre el límite de Balance (50,000): El código respeta rigurosamente el tope numérico solicitado. Sin embargo, mantén en mente que si comercializas charters privados premium de catamaranes grandes o servicios especiales para grupos corporativos masivos, es muy probable que requieras romper ese límite pronto. Si deseas eliminar el techo en el futuro, solo bastará con remover el atributo max="50000" en la línea del input correspondiente del código.
+
+Despliegue rápido: Si deseas que el QR funcione óptimamente entre múltiples dispositivos de tu equipo en Cancún, te sugiero subir este archivo index.html a un servicio de hosting estático gratuito y rápido como Vercel, Netlify o incluso GitHub Pages. Al tener un dominio fijo en internet (ej: amazingreservas.vercel.app), el QR generará rutas universales accesibles desde cualquier smartphone conectado a datos móviles en el muelle.
+
+
+para el apartado de actividades usa la columna "nombre"
+
+agrega de forma estetica en el resultado lo que aparece en las columnas "Pies, Capacidad de personas, Incluye" si el espacio esta vacio no lo agreges
+
+
+
+ademas agrega un boton de notas debajo de balance
+
+
+
+ademas agrega de forma estetica una imagen de la actividad, esta se usará la columna "Codigo" para ubicarla, todas las imagenes estaran en github almacenadas con el mismo nombre
+
+En la opcion de "otros" no se pondrá ninguna imagen
+
+
+
+El respositorio de github se llama https://beamazingcolors.github.io/Reservas/
+
+Gemini es una IA y puede cometer errores.
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -420,3 +764,5 @@
     </script>
 </body>
 </html>
+index.html
+Mostrando index.html.
