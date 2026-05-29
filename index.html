@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amazing Colors - Reservas Avanzado</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @media print {
             body { background: white; color: black; }
@@ -88,7 +89,7 @@
 
                 <div>
                     <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Notas / Observaciones del Servicio</label>
-                    <textarea id="notas" rows="3" placeholder="Restricciones alimenticias, decoraciones, itinerarios especiales, peticiones del cliente..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950"></textarea>
+                    <textarea id="notas" rows="3" placeholder="Restricciones alimenticias, decoraciones, itinerarios especiales..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950"></textarea>
                 </div>
 
                 <div>
@@ -96,9 +97,14 @@
                     <input type="text" id="confirmacion" readonly class="w-full px-3 py-2 bg-zinc-100 border border-zinc-200 rounded-lg text-sm font-mono text-zinc-500 cursor-not-allowed">
                 </div>
 
-                <button type="button" onclick="window.print()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm">
-                    Generar PDF / Imprimir Voucher
-                </button>
+                <div class="space-y-2 pt-2">
+                    <button type="button" onclick="window.print()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm">
+                        Generar PDF / Imprimir Voucher
+                    </button>
+                    <button type="button" onclick="exportarVoucherAImagen()" class="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-900 border border-zinc-300 font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm">
+                        Captura
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -115,15 +121,25 @@
                 </div>
 
                 <div class="space-y-5">
-                    <div>
-                        <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Pasajero Principal</p>
-                        <p id="pv-nombre" class="text-base font-semibold text-zinc-900">---</p>
+                    
+                    <div id="wrap-pv-imagen" class="hidden w-full h-44 overflow-hidden rounded-xl border border-zinc-100 shadow-inner bg-zinc-50">
+                        <img id="pv-imagen" src="" alt="Embarcación" class="w-full h-full object-cover">
                     </div>
 
-                    <div>
-                        <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Actividad contratada</p>
-                        <p id="pv-actividad" class="text-base font-semibold text-zinc-900">---</p>
-                        <p id="pv-descriptivo" class="text-xs text-zinc-500 italic mt-0.5 hidden">---</p>
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-4 w-full">
+                            <div>
+                                <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Pasajero Principal</p>
+                                <p id="pv-nombre" class="text-base font-semibold text-zinc-900">---</p>
+                            </div>
+
+                            <div>
+                                <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Actividad contratada</p>
+                                <p id="pv-actividad" class="text-base font-semibold text-zinc-900">---</p>
+                                <p id="pv-descriptivo" class="text-xs text-zinc-500 italic mt-0.5 hidden">---</p>
+                            </div>
+                        </div>
+                        
                     </div>
 
                     <div id="pv-fichaTecnica" class="hidden p-3 bg-zinc-50 rounded-lg border border-zinc-100 text-xs space-y-2">
@@ -202,11 +218,11 @@
         const SHEET_ID = '1NFNkPrPkN2ATZrNfEe6RqJzQTC17i3lq4UKgywJ8O10';
         const TSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=tsv`;
         
-        // Memoria global indexada del catálogo
+        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/imagenes/';
+
         window.catalogoActividades = {};
 
         function initFormOptions() {
-            // Generar pax 1 al 80
             const pSel = document.getElementById('personas');
             for (let i = 1; i <= 80; i++) {
                 let opt = document.createElement('option');
@@ -214,7 +230,6 @@
                 pSel.appendChild(opt);
             }
 
-            // Generar horas 24h
             const cSel = document.getElementById('checkin');
             for (let h = 0; h < 24; h++) {
                 for (let m = 0; m < 60; m += 30) {
@@ -226,7 +241,6 @@
                 }
             }
 
-            // Generar TC de 15 a 23 con pasos de 0.50
             const tcSel = document.getElementById('tipoCambio');
             for (let v = 15; v <= 23; v += 0.5) {
                 let opt = document.createElement('option');
@@ -253,6 +267,7 @@
                 const idxCapacidad = headers.indexOf('capacidad de personas');
                 const idxDescriptivo = headers.indexOf('descriptivo');
                 const idxIncluye = headers.indexOf('incluye');
+                const idxCodigo = headers.indexOf('codigo');
 
                 if (idxNombre === -1) throw new Error('Falta columna estructural "Nombre"');
 
@@ -267,7 +282,8 @@
                             pies: idxPies !== -1 && cols[idxPies] ? cols[idxPies].trim() : "",
                             capacidad: idxCapacidad !== -1 && cols[idxCapacidad] ? cols[idxCapacidad].trim() : "",
                             descriptivo: idxDescriptivo !== -1 && cols[idxDescriptivo] ? cols[idxDescriptivo].trim() : "",
-                            incluye: idxIncluye !== -1 && cols[idxIncluye] ? cols[idxIncluye].trim() : ""
+                            incluye: idxIncluye !== -1 && cols[idxIncluye] ? cols[idxIncluye].trim() : "" ,
+                            codigoImg: idxCodigo !== -1 && cols[idxCodigo] ? cols[idxCodigo].trim() : ""
                         };
 
                         let opt = document.createElement('option');
@@ -319,8 +335,19 @@
             const wPies = document.getElementById('wrap-pv-pies');
             const wCap = document.getElementById('wrap-pv-capacidad');
             const wInc = document.getElementById('wrap-pv-incluye');
+            
+            const pvImg = document.getElementById('pv-imagen');
+            const wImg = document.getElementById('wrap-pv-imagen');
 
             if (meta && actSel !== "Otros") {
+                if (meta.codigoImg) {
+                    pvImg.src = GITHUB_BASE_URL + meta.codigoImg;
+                    wImg.classList.remove('hidden');
+                } else {
+                    wImg.classList.add('hidden');
+                    pvImg.src = '';
+                }
+
                 if (meta.descriptivo) {
                     pvDesc.textContent = meta.descriptivo;
                     pvDesc.classList.remove('hidden');
@@ -348,6 +375,8 @@
             } else {
                 pvDesc.classList.add('hidden');
                 pvFicha.classList.add('hidden');
+                wImg.classList.add('hidden');
+                pvImg.src = '';
             }
 
             let txtEquiv = "---";
@@ -406,7 +435,6 @@
             if(tc) q.append('tc', tc);
             if(no && no.trim() !== '') q.append('no', no);
             
-            // Forzamos el modo "solo voucher" para el escaneo del QR
             q.append('view', 'voucher');
 
             const finalUrl = `${baseUrl}?${q.toString()}`;
@@ -439,17 +467,38 @@
 
             syncPreview();
 
-            // EJECUCIÓN DEL MODO EXCLUSIVO: Si detecta el parámetro, reestructura el DOM
             if (q.get('view') === 'voucher') {
                 const formCol = document.getElementById('form-container');
                 const voucherCol = document.getElementById('voucher-preview');
                 
-                if (formCol) formCol.remove(); // Eliminamos el formulario por completo de la vista del cliente
+                if (formCol) formCol.remove();
                 if (voucherCol) {
                     voucherCol.classList.remove('lg:col-span-7');
                     voucherCol.classList.add('lg:col-span-12', 'max-w-2xl', 'mx-auto', 'my-4');
                 }
             }
+        }
+
+        // Función que renderiza y descarga la imagen limpia del Voucher
+        function exportarVoucherAImagen() {
+            const target = document.getElementById('voucher-preview');
+            const codigoConfirmacion = document.getElementById('confirmacion').value || 'voucher';
+            
+            // Opciones para asegurar renderizado óptimo y evitar bloqueos CORS en fotos externas
+            const opciones = {
+                useCORS: true, 
+                scale: 2, // Duplica la resolución para evitar pixeles borrosos
+                backgroundColor: '#ffffff'
+            };
+
+            html2canvas(target, opciones).then(canvas => {
+                const enlace = document.createElement('a');
+                enlace.download = `${codigoConfirmacion}.png`;
+                enlace.href = canvas.toDataURL('image/png');
+                enlace.click();
+            }).catch(err => {
+                console.error("Error procesando la captura de imagen:", err);
+            });
         }
 
         document.getElementById('reserveForm').addEventListener('input', syncPreview);
