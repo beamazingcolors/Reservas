@@ -16,10 +16,10 @@
 </head>
 <body class="bg-zinc-50 text-zinc-800 min-h-screen font-sans antialiased">
 
-    <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div class="max-w-7xl mx-auto px-3 py-4 md:px-4 md:py-8 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
         
-        <div id="form-container" class="lg:col-span-5 bg-white p-6 rounded-xl border border-zinc-200 shadow-sm h-fit no-print">
-            <h2 class="text-xl font-semibold tracking-tight text-zinc-900 mb-6 pb-2 border-b border-zinc-100">
+        <div id="form-container" class="lg:col-span-5 bg-white p-4 md:p-6 rounded-xl border border-zinc-200 shadow-sm h-fit no-print">
+            <h2 class="text-lg md:text-xl font-semibold tracking-tight text-zinc-900 mb-4 md:mb-6 pb-2 border-b border-zinc-100">
                 Captura de Reserva
             </h2>
             
@@ -45,17 +45,17 @@
                     <div>
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Pax (1-80)</label>
                         <select id="personas" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
-                            </select>
+                        </select>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Check In</label>
                         <select id="checkin" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
-                            </select>
+                        </select>
                     </div>
-                    <div class="col-span-2">
+                    <div class="sm:col-span-2">
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Check Point (Lugar)</label>
                         <input type="text" id="checkpoint" required placeholder="Ej. Marina Imperial" class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
                     </div>
@@ -78,7 +78,7 @@
                         <div>
                             <label class="block text-[10px] text-zinc-400 uppercase mb-0.5">T.C. Selección</label>
                             <select id="tipoCambio" class="w-full p-1 border border-zinc-300 rounded bg-white focus:outline-none text-xs">
-                                </select>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-[10px] text-zinc-400 uppercase mb-0.5">Equivalencia Estimada</label>
@@ -97,33 +97,33 @@
                     <input type="text" id="confirmacion" readonly class="w-full px-3 py-2 bg-zinc-100 border border-zinc-200 rounded-lg text-sm font-mono text-zinc-500 cursor-not-allowed">
                 </div>
 
-                <div class="space-y-2 pt-2">
-                    <button type="button" onclick="window.print()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm">
-                        Generar PDF / Imprimir Voucher
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                    <button type="button" onclick="window.print()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-3 px-4 rounded-lg text-sm transition-colors shadow-sm order-1 sm:order-none">
+                        Generar PDF / Imprimir
                     </button>
-                    <button type="button" onclick="exportarVoucherAImagen()" class="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-900 border border-zinc-300 font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm">
+                    <button type="button" onclick="exportarVoucherAImagen()" class="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-900 border border-zinc-300 font-medium py-3 px-4 rounded-lg text-sm transition-colors shadow-sm">
                         Captura
                     </button>
                 </div>
             </form>
         </div>
 
-        <div id="voucher-preview" class="lg:col-span-7 bg-white p-8 rounded-xl border border-zinc-200 shadow-sm print-card flex flex-col justify-between min-h-[680px]">
+        <div id="voucher-preview" class="lg:col-span-7 bg-white p-5 md:p-8 rounded-xl border border-zinc-200 shadow-sm print-card flex flex-col justify-between min-h-[600px] md:min-h-[680px]">
             <div>
-                <div class="flex justify-between items-start border-b border-zinc-200 pb-5 mb-5">
+                <div class="flex justify-between items-start border-b border-zinc-200 pb-4 mb-4 md:pb-5 md:mb-5">
                     <div>
-                        <h1 class="text-2xl font-bold tracking-tight text-zinc-950">AMAZING COLORS</h1>
-                        <p class="text-xs tracking-widest uppercase text-zinc-400 mt-0.5">Confirmation Voucher</p>
+                        <h1 class="text-xl md:text-2xl font-bold tracking-tight text-zinc-950">AMAZING COLORS</h1>
+                        <p class="text-[10px] tracking-widest uppercase text-zinc-400 mt-0.5">Confirmation Voucher</p>
                     </div>
                     <div class="text-right">
-                        <span id="pv-confirmacion" class="inline-block bg-zinc-900 text-white font-mono text-xs font-semibold px-3 py-1 rounded">ACT-XXXXXX-X</span>
+                        <span id="pv-confirmacion" class="inline-block bg-zinc-900 text-white font-mono text-[11px] md:text-xs font-semibold px-2.5 py-1 rounded">ACT-XXXXXX-X</span>
                     </div>
                 </div>
 
-                <div class="space-y-5">
+                <div class="space-y-4 md:space-y-5">
                     
                     <div class="flex justify-between items-start">
-                        <div class="space-y-4 w-full">
+                        <div class="space-y-3 md:space-y-4 w-full">
                             <div>
                                 <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Pasajero Principal</p>
                                 <p id="pv-nombre" class="text-base font-semibold text-zinc-900">---</p>
@@ -154,7 +154,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 border-t border-zinc-100 pt-4">
+                    <div class="grid grid-cols-2 gap-4 border-t border-zinc-100 pt-3 md:pt-4">
                         <div>
                             <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Fecha del Servicio</p>
                             <p id="pv-fecha" class="text-sm font-medium text-zinc-900">---</p>
@@ -165,23 +165,23 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 border-b border-zinc-100 pb-4">
+                    <div class="grid grid-cols-2 gap-4 border-b border-zinc-100 pb-3 md:pb-4">
                         <div>
                             <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Horario de Check-in</p>
                             <p id="pv-checkin" class="text-sm font-medium text-zinc-900">---</p>
                         </div>
                         <div>
                             <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Punto de Encuentro</p>
-                            <p id="pv-checkpoint" class="text-sm font-medium text-zinc-900">---</p>
+                            <p id="pv-checkpoint" class="text-sm font-medium text-zinc-900 break-words">---</p>
                         </div>
                     </div>
 
-                    <div class="bg-zinc-900 text-white p-4 rounded-lg flex justify-between items-center shadow-sm">
+                    <div class="bg-zinc-900 text-white p-3 md:p-4 rounded-lg flex justify-between items-center shadow-sm">
                         <div>
                             <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400">Balance Pendiente</p>
-                            <p id="pv-balance" class="text-lg font-bold">---</p>
+                            <p id="pv-balance" class="text-base md:text-lg font-bold">---</p>
                         </div>
-                        <div class="text-right border-l border-zinc-700 pl-4">
+                        <div class="text-right border-l border-zinc-700 pl-3 md:pl-4">
                             <p class="text-[9px] font-medium uppercase tracking-wider text-zinc-400">Conversión Ref.</p>
                             <p id="pv-conversion" class="text-xs font-mono text-zinc-300">---</p>
                         </div>
@@ -194,14 +194,14 @@
                 </div>
             </div>
 
-            <div class="mt-8 border-t border-zinc-100 pt-5 flex justify-between items-center">
-                <div class="text-left text-[10px] text-zinc-400 max-w-[70%]">
+            <div class="mt-6 md:mt-8 border-t border-zinc-100 pt-4 md:pt-5 flex flex-row justify-between items-center gap-4">
+                <div class="text-left text-[10px] text-zinc-400 max-w-[65%]">
                     <p class="font-semibold text-zinc-600 mb-0.5">Amazing Colors Experience S.A.S. de C.V.</p>
                     <p>Cancún, Quintana Roo, México.</p>
-                    <p class="mt-2 text-[9px] text-zinc-300 italic">Voucher válido únicamente con firma corporativa o validación QR activa en muelles.</p>
+                    <p class="mt-1.5 text-[9px] text-zinc-300 italic leading-tight">Voucher válido con validación QR activa en muelles.</p>
                 </div>
-                <div class="text-center flex flex-col items-center">
-                    <img id="qrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=Amazing" alt="QR" class="w-[95px] h-[95px] border border-zinc-200 p-1 rounded bg-white">
+                <div class="text-center flex flex-col items-center flex-shrink-0">
+                    <img id="qrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=Amazing" alt="QR" class="w-[85px] h-[85px] md:w-[95px] md:h-[95px] border border-zinc-200 p-1 rounded bg-white">
                     <span class="text-[8px] font-mono text-zinc-400 mt-1 uppercase tracking-wider">Validar Reserva</span>
                 </div>
             </div>
@@ -367,7 +367,7 @@
                 } else {
                     let conv = balance / tc;
                     txtEquiv = `${conv.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} USD`;
-                    txtPrevConv = `$${txtEquiv}`;
+                    txtPrevConv = `$${txtPrevConv}`;
                 }
             }
             document.getElementById('calculoConversion').textContent = txtEquiv;
