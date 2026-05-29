@@ -37,7 +37,7 @@
                     <input type="text" id="otraActividad" placeholder="Especificar actividad manualmente" class="hidden mt-2 w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Fecha</label>
                         <input type="date" id="fecha" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
@@ -274,8 +274,7 @@
                             pies: idxPies !== -1 && cols[idxPies] ? cols[idxPies].trim() : "",
                             capacidad: idxCapacidad !== -1 && cols[idxCapacidad] ? cols[idxCapacidad].trim() : "",
                             descriptivo: idxDescriptivo !== -1 && cols[idxDescriptivo] ? cols[idxDescriptivo].trim() : "",
-                            incluye: idxIncluye !== -1 && cols[idxIncluye] ? cols[idxIncluye].trim() :
-""
+                            incluye: idxIncluye !== -1 && cols[idxIncluye] ? cols[idxIncluye].trim() : ""
                         };
 
                         let opt = document.createElement('option');
