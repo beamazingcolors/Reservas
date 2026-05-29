@@ -139,7 +139,6 @@
                                 <p id="pv-descriptivo" class="text-xs text-zinc-500 italic mt-0.5 hidden">---</p>
                             </div>
                         </div>
-                        
                     </div>
 
                     <div id="pv-fichaTecnica" class="hidden p-3 bg-zinc-50 rounded-lg border border-zinc-100 text-xs space-y-2">
@@ -218,7 +217,8 @@
         const SHEET_ID = '1NFNkPrPkN2ATZrNfEe6RqJzQTC17i3lq4UKgywJ8O10';
         const TSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=tsv`;
         
-        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/imagenes/';
+        // Enlace corregido apuntando directamente a la raíz de tu repositorio
+        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/beamazingcolors/Reservas/main/';
 
         window.catalogoActividades = {};
 
@@ -479,15 +479,13 @@
             }
         }
 
-        // Función que renderiza y descarga la imagen limpia del Voucher
         function exportarVoucherAImagen() {
             const target = document.getElementById('voucher-preview');
             const codigoConfirmacion = document.getElementById('confirmacion').value || 'voucher';
             
-            // Opciones para asegurar renderizado óptimo y evitar bloqueos CORS en fotos externas
             const opciones = {
                 useCORS: true, 
-                scale: 2, // Duplica la resolución para evitar pixeles borrosos
+                scale: 2, 
                 backgroundColor: '#ffffff'
             };
 
