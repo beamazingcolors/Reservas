@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amazing Colors - Reservas Avanzado</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -18,20 +17,17 @@
 
     <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- COLUMNA 1: FORMULARIO (CAPTURA) - OCUPA 5 COLUMNAS -->
-        <div class="lg:col-span-5 bg-white p-6 rounded-xl border border-zinc-200 shadow-sm h-fit no-print">
+        <div id="form-container" class="lg:col-span-5 bg-white p-6 rounded-xl border border-zinc-200 shadow-sm h-fit no-print">
             <h2 class="text-xl font-semibold tracking-tight text-zinc-900 mb-6 pb-2 border-b border-zinc-100">
                 Captura de Reserva
             </h2>
             
             <form id="reserveForm" class="space-y-4">
-                <!-- Nombre Cliente -->
                 <div>
                     <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Nombre del Cliente</label>
                     <input type="text" id="nombreCliente" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
                 </div>
 
-                <!-- Actividad (Columna Nombre del Sheet) -->
                 <div>
                     <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Actividad / Embarcación</label>
                     <select id="actividad" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
@@ -40,7 +36,6 @@
                     <input type="text" id="otraActividad" placeholder="Especificar actividad manualmente" class="hidden mt-2 w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
                 </div>
 
-                <!-- Fecha y Personas -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Fecha</label>
@@ -49,18 +44,15 @@
                     <div>
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Pax (1-80)</label>
                         <select id="personas" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
-                            <!-- JS dinámico -->
-                        </select>
+                            </select>
                     </div>
                 </div>
 
-                <!-- Check-in y Punto de Encuentro -->
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Check In</label>
                         <select id="checkin" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
-                            <!-- JS dinámico -->
-                        </select>
+                            </select>
                     </div>
                     <div class="col-span-2">
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Check Point (Lugar)</label>
@@ -68,7 +60,6 @@
                     </div>
                 </div>
 
-                <!-- Balance -->
                 <div>
                     <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Balance (Monto y Divisa)</label>
                     <div class="flex gap-2">
@@ -80,15 +71,13 @@
                     </div>
                 </div>
 
-                <!-- Conversor de divisas interno -->
                 <div class="p-3 bg-zinc-50 rounded-lg border border-zinc-200">
                     <span class="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">Conversor de Divisas Interno</span>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
                             <label class="block text-[10px] text-zinc-400 uppercase mb-0.5">T.C. Selección</label>
                             <select id="tipoCambio" class="w-full p-1 border border-zinc-300 rounded bg-white focus:outline-none text-xs">
-                                <!-- Generado de 15 a 23 paso 0.5 -->
-                            </select>
+                                </select>
                         </div>
                         <div>
                             <label class="block text-[10px] text-zinc-400 uppercase mb-0.5">Equivalencia Estimada</label>
@@ -97,13 +86,11 @@
                     </div>
                 </div>
 
-                <!-- Apartado para Notas (Posicionado antes de Confirmación) -->
                 <div>
                     <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Notas / Observaciones del Servicio</label>
                     <textarea id="notas" rows="3" placeholder="Restricciones alimenticias, decoraciones, itinerarios especiales, peticiones del cliente..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950"></textarea>
                 </div>
 
-                <!-- Código Confirmación -->
                 <div>
                     <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Confirmación Automática</label>
                     <input type="text" id="confirmacion" readonly class="w-full px-3 py-2 bg-zinc-100 border border-zinc-200 rounded-lg text-sm font-mono text-zinc-500 cursor-not-allowed">
@@ -115,10 +102,8 @@
             </form>
         </div>
 
-        <!-- COLUMNA 2: VISTA PREVIA (VOUCHER DE IMPRESIÓN) - OCUPA 7 COLUMNAS -->
         <div id="voucher-preview" class="lg:col-span-7 bg-white p-8 rounded-xl border border-zinc-200 shadow-sm print-card flex flex-col justify-between min-h-[680px]">
             <div>
-                <!-- Encabezado -->
                 <div class="flex justify-between items-start border-b border-zinc-200 pb-5 mb-5">
                     <div>
                         <h1 class="text-2xl font-bold tracking-tight text-zinc-950">AMAZING COLORS</h1>
@@ -129,7 +114,6 @@
                     </div>
                 </div>
 
-                <!-- Cuerpo del Voucher -->
                 <div class="space-y-5">
                     <div>
                         <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Pasajero Principal</p>
@@ -142,7 +126,6 @@
                         <p id="pv-descriptivo" class="text-xs text-zinc-500 italic mt-0.5 hidden">---</p>
                     </div>
 
-                    <!-- FICHA TÉCNICA CONDICIONAL (Pies, Capacidad, Incluye) -->
                     <div id="pv-fichaTecnica" class="hidden p-3 bg-zinc-50 rounded-lg border border-zinc-100 text-xs space-y-2">
                         <div class="grid grid-cols-2 gap-2 border-b border-zinc-200/60 pb-2">
                             <div id="wrap-pv-pies" class="hidden">
@@ -160,7 +143,6 @@
                         </div>
                     </div>
 
-                    <!-- Datos Logísticos -->
                     <div class="grid grid-cols-2 gap-4 border-t border-zinc-100 pt-4">
                         <div>
                             <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Fecha del Servicio</p>
@@ -183,7 +165,6 @@
                         </div>
                     </div>
 
-                    <!-- Bloque de Balance -->
                     <div class="bg-zinc-900 text-white p-4 rounded-lg flex justify-between items-center shadow-sm">
                         <div>
                             <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400">Balance Pendiente</p>
@@ -195,7 +176,6 @@
                         </div>
                     </div>
 
-                    <!-- Bloque de Notas del Voucher -->
                     <div id="wrap-pv-notas" class="hidden bg-amber-50/50 border border-amber-100 p-3 rounded-lg">
                         <p class="text-[10px] font-medium uppercase tracking-wider text-amber-700 mb-0.5">Notas / Observaciones de Operación</p>
                         <p id="pv-notas" class="text-xs text-zinc-600 italic whitespace-pre-line"></p>
@@ -203,7 +183,6 @@
                 </div>
             </div>
 
-            <!-- QR y Footer -->
             <div class="mt-8 border-t border-zinc-100 pt-5 flex justify-between items-center">
                 <div class="text-left text-[10px] text-zinc-400 max-w-[70%]">
                     <p class="font-semibold text-zinc-600 mb-0.5">Amazing Colors Experience S.A.S. de C.V.</p>
@@ -219,7 +198,6 @@
 
     </div>
 
-    <!-- CONTROLADOR JAVASCRIPT -->
     <script>
         const SHEET_ID = '1NFNkPrPkN2ATZrNfEe6RqJzQTC17i3lq4UKgywJ8O10';
         const TSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=tsv`;
@@ -265,11 +243,9 @@
                 if (!response.ok) throw new Error('Bloqueo de comunicación.');
                 const data = await response.text();
                 
-                // Dividir filas contemplando retornos de carro variados
                 const lines = data.split(/\r?\n/);
                 if (lines.length === 0 || !lines[0]) throw new Error('Sheet Vacío');
 
-                // Normalización estricta de encabezados mapeados
                 const headers = lines[0].split('\t').map(h => h.trim().toLowerCase());
                 
                 const idxNombre = headers.indexOf('nombre');
@@ -287,7 +263,6 @@
                     const nameVal = cols[idxNombre] ? cols[idxNombre].trim() : "";
                     
                     if (nameVal !== "") {
-                        // Guardar metadatos en memoria cruzada
                         window.catalogoActividades[nameVal] = {
                             pies: idxPies !== -1 && cols[idxPies] ? cols[idxPies].trim() : "",
                             capacidad: idxCapacidad !== -1 && cols[idxCapacidad] ? cols[idxCapacidad].trim() : "",
@@ -301,7 +276,6 @@
                     }
                 }
 
-                // Opción requerida "Otros"
                 let optOtros = document.createElement('option');
                 optOtros.value = "Otros"; optOtros.textContent = "Otros (Especificar)";
                 actSelect.appendChild(optOtros);
@@ -331,7 +305,6 @@
             const tc = parseFloat(document.getElementById('tipoCambio').value) || 20;
             const notasTxt = document.getElementById('notas').value || '';
 
-            // 1. Manejo condicional de Actividad e Input "Otros"
             if (actSel === "Otros") {
                 document.getElementById('otraActividad').classList.remove('hidden');
             } else {
@@ -340,7 +313,6 @@
             const actividadFinal = (actSel === "Otros") ? (otraAct || '---') : (actSel || '---');
             document.getElementById('pv-actividad').textContent = actividadFinal;
 
-            // 2. Extracción y despliegue estético de la Ficha Técnica (Pies, Capacidad, Descriptivo, Incluye)
             const meta = window.catalogoActividades[actSel];
             const pvDesc = document.getElementById('pv-descriptivo');
             const pvFicha = document.getElementById('pv-fichaTecnica');
@@ -349,13 +321,11 @@
             const wInc = document.getElementById('wrap-pv-incluye');
 
             if (meta && actSel !== "Otros") {
-                // Descriptivo
                 if (meta.descriptivo) {
                     pvDesc.textContent = meta.descriptivo;
                     pvDesc.classList.remove('hidden');
                 } else { pvDesc.classList.add('hidden'); }
 
-                // Elementos de la ficha interna
                 let tieneFicha = false;
                 
                 if (meta.pies) {
@@ -376,12 +346,10 @@
                 if (tieneFicha) { pvFicha.classList.remove('hidden'); } else { pvFicha.classList.add('hidden'); }
 
             } else {
-                // Reset absoluto si es "Otros" o no hay selección
                 pvDesc.classList.add('hidden');
                 pvFicha.classList.add('hidden');
             }
 
-            // 3. Conversión de Divisas
             let txtEquiv = "---";
             let txtPrevConv = "---";
             if (balance > 0) {
@@ -398,7 +366,6 @@
             document.getElementById('calculoConversion').textContent = txtEquiv;
             document.getElementById('pv-conversion').textContent = txtPrevConv;
 
-            // 4. Notas del Servicio
             const wPvNotas = document.getElementById('wrap-pv-notas');
             if (notasTxt.trim() !== "") {
                 document.getElementById('pv-notas').textContent = notasTxt;
@@ -407,7 +374,6 @@
                 wPvNotas.classList.add('hidden');
             }
 
-            // 5. Construcción de Código de Confirmación: ACT-AAMMDD-Pax
             let codigo = "ACT-XXXXXX-" + pax;
             if (fecha !== '---') {
                 const p = fecha.split('-');
@@ -422,7 +388,6 @@
             document.getElementById('pv-balance').textContent = `${balance.toLocaleString()} ${divisa}`;
             document.getElementById('pv-confirmacion').textContent = codigo;
 
-            // 6. Sincronización del QR con URL persistente
             actualizarQR(cliente, actSel, otraAct, fecha, pax, checkin, checkpoint, balance, divisa, tc, notasTxt);
         }
 
@@ -440,6 +405,9 @@
             if(d) q.append('d', d);
             if(tc) q.append('tc', tc);
             if(no && no.trim() !== '') q.append('no', no);
+            
+            // Forzamos el modo "solo voucher" para el escaneo del QR
+            q.append('view', 'voucher');
 
             const finalUrl = `${baseUrl}?${q.toString()}`;
             document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(finalUrl)}`;
@@ -470,15 +438,25 @@
             if (q.has('oa')) document.getElementById('otraActividad').value = q.get('oa');
 
             syncPreview();
+
+            // EJECUCIÓN DEL MODO EXCLUSIVO: Si detecta el parámetro, reestructura el DOM
+            if (q.get('view') === 'voucher') {
+                const formCol = document.getElementById('form-container');
+                const voucherCol = document.getElementById('voucher-preview');
+                
+                if (formCol) formCol.remove(); // Eliminamos el formulario por completo de la vista del cliente
+                if (voucherCol) {
+                    voucherCol.classList.remove('lg:col-span-7');
+                    voucherCol.classList.add('lg:col-span-12', 'max-w-2xl', 'mx-auto', 'my-4');
+                }
+            }
         }
 
-        // Suscribir eventos globales de actualización reactiva
         document.getElementById('reserveForm').addEventListener('input', syncPreview);
         document.getElementById('actividad').addEventListener('change', syncPreview);
         document.getElementById('divisa').addEventListener('change', syncPreview);
         document.getElementById('tipoCambio').addEventListener('change', syncPreview);
 
-        // Disparar secuencia
         initFormOptions();
         fetchActivities();
     </script>
