@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazing Colors - Reservas V2</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body { background: white; color: black; }
+            .no-print { display: none !important; }
+            .print-card { border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        }
+    </style>
+</head>
+<body class="bg-zinc-50 text-zinc-800 min-h-screen font-sans antialiased">
+
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- COLUMNA 1: FORMULARIO (NO SE IMPRIME) -->
+        <div class="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm h-fit no-print">
+            <h2 class="text-xl font-semibold tracking-tight text-zinc-900 mb-6 pb-2 border-b border-zinc-100">
+                Captura de Reserva V2
+            </h2>
+            
+            <form id="reserveForm" class="space-y-4">
+                <!-- Nombre -->
+                <div>
+                    <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Nombre del Cliente</label>
+                    <input type="text" id="nombre" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                </div>
+
+                <!-- Actividad -->
+                <div>
+                    <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Actividad</label>
+                    <select id="actividad" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                        <option value="">Cargando actividades desde el Google Sheet...</option>
+                    </select>
+                    <!-- Campo dinámico para 'Otros' -->
+                    <input type="text" id="otraActividad" placeholder="Especificar otra actividad" class="hidden mt-2 w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                </div>
+
+                <!-- Fecha y Personas -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Fecha</label>
+                        <input type="date" id="fecha" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Pax (1-80)</label>
+                        <select id="personas" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                            <!-- JS generará del 1 al 80 -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Check-in y Punto de Encuentro -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Check In</label>
+                        <select id="checkin" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                            <!-- JS generará horarios de 24hrs -->
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Check Point (Lugar)</label>
+                        <input type="text" id="checkpoint" required placeholder="Ej. Marina Imperial" class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                    </div>
+                </div>
+
+                <!-- Balance -->
+                <div>
+                    <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Balance (Monto y Divisa)</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="balance" min="1" max="50000" required placeholder="1 - 50000" class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                        <select id="divisa" class="w-24 px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                            <option value="MXN">MXN</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Conversor de Divisas -->
+                <div class="p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">Conversor de Divisas Interno</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-zinc-400 uppercase mb-0.5">Tipo de Cambio</label>
+                            <select id="tipoCambio" class="w-full px-2 py-1 border border-zinc-300 rounded text-xs bg-white focus:outline-none">
+                                <!-- JS generará de 15 a 23 de 0.50 en 0.50 -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-zinc-400 uppercase mb-0.5">Equivalencia Estimada</label>
+                            <div id="calculoConversion" class="text-xs font-medium pt-1.5 text-zinc-700">---</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Código de Confirmación (Bloqueado) -->
+                <div>
+                    <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Código de Confirmación</label>
+                    <input type="text" id="confirmacion" readonly class="w-full px-3 py-2 bg-zinc-100 border border-zinc-200 rounded-lg text-sm font-mono text-zinc-600 cursor-not-allowed">
+                </div>
+
+                <!-- Botón PDF -->
+                <div class="pt-2">
+                    <button type="button" onclick="window.print()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm">
+                        Generar PDF / Imprimir
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- COLUMNA 2: VISTA PREVIA (SE IMPRIME COMO EL VOUCHER) -->
+        <div id="voucher-preview" class="bg-white p-8 rounded-xl border border-zinc-200 shadow-sm print-card flex flex-col justify-between h-fit min-h-[600px]">
+            <div>
+                <div class="flex justify-between items-start border-b border-zinc-200 pb-6 mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-zinc-950">AMAZING COLORS</h1>
+                        <p class="text-xs tracking-widest uppercase text-zinc-400 mt-0.5">Confirmation Voucher</p>
+                    </div>
+                    <div class="text-right flex flex-col items-end">
+                        <span id="pv-confirmacion" class="inline-block bg-zinc-900 text-white font-mono text-xs font-semibold px-3 py-1 rounded mb-2">ACT-XXXXXX-X</span>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Pasajero Principal</p>
+                        <p id="pv-nombre" class="text-base font-semibold text-zinc-900">---</p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Actividad contratada</p>
+                        <p id="pv-actividad" class="text-base font-semibold text-zinc-900">---</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Fecha del Servicio</p>
+                            <p id="pv-fecha" class="text-sm font-medium text-zinc-900">---</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Total de Pasajeros</p>
+                            <p id="pv-personas" class="text-sm font-medium text-zinc-900">---</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 border-t border-b border-zinc-100 py-4">
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Horario de Check-in</p>
+                            <p id="pv-checkin" class="text-sm font-medium text-zinc-900">---</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Punto de Encuentro</p>
+                            <p id="pv-checkpoint" class="text-sm font-medium text-zinc-900">---</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-50 p-4 rounded-lg flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wider text-zinc-500">Balance Pendiente</p>
+                            <p id="pv-balance" class="text-lg font-bold text-zinc-950">---</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400">Conversión Ref.</p>
+                            <p id="pv-conversion" class="text-xs font-medium text-zinc-600">---</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR INFERIOR: QR Y PIE DE PÁGINA -->
+            <div class="mt-8 border-t border-zinc-100 pt-6 flex justify-between items-center">
+                <div class="text-left text-[10px] text-zinc-400 max-w-[70%]">
+                    <p class="font-semibold text-zinc-600 mb-1">Amazing Colors Experience S.A.S. de C.V.</p>
+                    <p>Cancún, Quintana Roo, México.</p>
+                    <p class="mt-2 text-[9px] text-zinc-300 italic">Este voucher es un reflejo digital de la reserva activa en sistema.</p>
+                </div>
+                <!-- Código QR Dinámico -->
+                <div class="text-center flex flex-col items-center">
+                    <img id="qrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=AmazingColors" alt="QR Reserva" class="w-[90px] h-[90px] border border-zinc-200 p-1 rounded bg-white">
+                    <span class="text-[8px] font-mono text-zinc-400 mt-1 uppercase tracking-wider">Escanear Reserva</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- LÓGICA DE LA APLICACIÓN -->
+    <script>
+        // Nueva URL estructural para exportar directamente como TSV usando el ID provisto
+        const SHEET_ID = '1NFNkPrPkN2ATZrNfEe6RqJzQTC17i3lq4UKgywJ8O10';
+        const TSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=tsv`;
+
+        // Inicializar elementos numéricos, horarios y tipo de cambio
+        function initFormOptions() {
+            // Pax 1 al 80
+            const personasSelect = document.getElementById('personas');
+            for (let i = 1; i <= 80; i++) {
+                let opt = document.createElement('option');
+                opt.value = i; opt.textContent = `${i} ${i === 1 ? 'Persona' : 'Personas'}`;
+                personasSelect.appendChild(opt);
+            }
+
+            // Horarios 24 hrs
+            const checkinSelect = document.getElementById('checkin');
+            for (let h = 0; h < 24; h++) {
+                for (let m = 0; m < 60; m += 30) {
+                    let hh = h.toString().padStart(2, '0');
+                    let mm = m.toString().padStart(2, '0');
+                    let opt = document.createElement('option');
+                    opt.value = `${hh}:${mm}`; opt.textContent = `${hh}:${mm} hrs`;
+                    checkinSelect.appendChild(opt);
+                }
+            }
+
+            // Tipo de Cambio de 15 a 23 incrementando de 0.50 en 0.50
+            const tcSelect = document.getElementById('tipoCambio');
+            for (let val = 15; val <= 23; val += 0.5) {
+                let opt = document.createElement('option');
+                opt.value = val.toFixed(2);
+                opt.textContent = `${val.toFixed(2)}`;
+                if (val === 20) opt.selected = true; // Valor default retórico razonable
+                tcSelect.appendChild(opt);
+            }
+        }
+
+        // Obtener datos del Google Sheet TSV con manejo de errores limpio
+        async function fetchActivities() {
+            const actividadSelect = document.getElementById('actividad');
+            try {
+                const response = await fetch(TSV_URL);
+                if (!response.ok) throw new Error('Error de red al acceder al archivo Sheet.');
+                
+                const data = await response.text();
+                const lines = data.split('\n');
+                
+                if (lines.length === 0 || !lines[0]) throw new Error('El documento está vacío o no es accesible.');
+
+                // Buscar columna "tipo" de forma dinámica e insensible a mayúsculas
+                const headers = lines[0].split('\t').map(h => h.trim().toLowerCase());
+                const tipoIndex = headers.indexOf('tipo');
+
+                if (tipoIndex === -1) {
+                    throw new Error('No se encontró la columna exacta titulada "tipo" en la primera fila.');
+                }
+
+                const actividades = new Set();
+                for (let i = 1; i < lines.length; i++) {
+                    const columns = lines[i].split('\t');
+                    if (columns[tipoIndex] && columns[tipoIndex].trim() !== "") {
+                        actividades.add(columns[tipoIndex].trim());
+                    }
+                }
+
+                actividadSelect.innerHTML = '<option value="">-- Selecciona una Actividad --</option>';
+                actividades.forEach(act => {
+                    let opt = document.createElement('option');
+                    opt.value = act; opt.textContent = act;
+                    actividadSelect.appendChild(opt);
+                });
+                
+                // Opción requerida "Otros"
+                let optOtros = document.createElement('option');
+                optOtros.value = "Otros"; optOtros.textContent = "Otros (Especificar)";
+                actividadSelect.appendChild(optOtros);
+
+                // Una vez cargadas las actividades de red, procesamos si viene información en la URL
+                loadFromUrlQuery();
+
+            } catch (error) {
+                console.error(error);
+                actividadSelect.innerHTML = '<option value="">⚠️ Error: Verifica que el Sheet sea público ("Cualquier persona con el enlace")</option>';
+                
+                // Forzar fallback de "Otros" por si está offline o bloqueado por CORS localmente
+                let optOtros = document.createElement('option');
+                optOtros.value = "Otros"; optOtros.textContent = "Otros (Especificar manualmente)";
+                actividadSelect.appendChild(optOtros);
+                loadFromUrlQuery();
+            }
+        }
+
+        // Calcular Código de Confirmación Dinámico: ACT-AAMMDD-Pax
+        function generarCodigoConfirmacion() {
+            const fechaVal = document.getElementById('fecha').value;
+            const personasVal = document.getElementById('personas').value;
+            
+            if (!fechaVal) return 'ACT-XXXXXX-' + personasVal;
+
+            const partes = fechaVal.split('-'); 
+            const aa = partes[0].substring(2);
+            const mm = partes[1];
+            const dd = partes[2];
+
+            return `ACT-${aa}${mm}${dd}-${personasVal}`;
+        }
+
+        // Sincronizar Formulario, Conversión y código QR en tiempo real
+        function syncPreview() {
+            const nombre = document.getElementById('nombre').value || '---';
+            const actividadSelect = document.getElementById('actividad').value;
+            const otraActividad = document.getElementById('otraActividad').value;
+            const fecha = document.getElementById('fecha').value || '---';
+            const personas = document.getElementById('personas').value;
+            const checkin = document.getElementById('checkin').value;
+            const checkpoint = document.getElementById('checkpoint').value || '---';
+            const balance = parseFloat(document.getElementById('balance').value) || 0;
+            const divisa = document.getElementById('divisa').value;
+            const tc = parseFloat(document.getElementById('tipoCambio').value) || 20;
+
+            // Tratamiento de Actividad "Otros"
+            if (actividadSelect === "Otros") {
+                document.getElementById('otraActividad').classList.remove('hidden');
+            } else {
+                document.getElementById('otraActividad').classList.add('hidden');
+            }
+            const actividadFinal = (actividadSelect === "Otros") ? (otraActividad || '---') : (actividadSelect || '---');
+            
+            // Cálculo de Conversión Cruzada
+            let equivalenciaTexto = "---";
+            let previewConversionTexto = "---";
+            
+            if (balance > 0) {
+                if (divisa === "USD") {
+                    let convertido = balance * tc;
+                    equivalenciaTexto = `${convertido.toLocaleString('es-MX', {minimumFractionDigits:2, maximumFractionDigits:2})} MXN`;
+                    previewConversionTexto = `$${equivalenciaTexto}`;
+                } else {
+                    let convertido = balance / tc;
+                    equivalenciaTexto = `${convertido.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} USD`;
+                    previewConversionTexto = `$${equivalenciaTexto}`;
+                }
+            }
+            document.getElementById('calculoConversion').textContent = equivalenciaTexto;
+
+            // Generar e Inyectar Código de Confirmación
+            const codigo = generarCodigoConfirmacion();
+            document.getElementById('confirmacion').value = codigo;
+
+            // Inyectar Datos en la Tarjeta de Vista Previa
+            document.getElementById('pv-nombre').textContent = nombre;
+            document.getElementById('pv-actividad').textContent = actividadFinal;
+            document.getElementById('pv-fecha').textContent = fecha;
+            document.getElementById('pv-personas').textContent = `${personas} pax`;
+            document.getElementById('pv-checkin').textContent = `${checkin} hrs`;
+            document.getElementById('pv-checkpoint').textContent = checkpoint;
+            document.getElementById('pv-balance').textContent = `${balance.toLocaleString()} ${divisa}`;
+            document.getElementById('pv-conversion').textContent = previewConversionTexto;
+            document.getElementById('pv-confirmacion').textContent = codigo;
+
+            // Actualizar Código QR Dinámico con los parámetros de la URL actual para reconstruir la reserva al escanear
+            actualizarQRCode(nombre, actividadSelect, otraActividad, fecha, personas, checkin, checkpoint, balance, divisa, tc);
+        }
+
+        // Generar URL con parámetros y actualizar la imagen del QR
+        function actualizarQRCode(n, a, oa, f, p, ci, cp, b, d, tc) {
+            const baseUrl = window.location.origin + window.location.pathname;
+            const params = new URLSearchParams();
+            if(n && n !== '---') params.append('n', n);
+            if(a) params.append('a', a);
+            if(a === 'Otros' && oa) params.append('oa', oa);
+            if(f && f !== '---') params.append('f', f);
+            if(p) params.append('p', p);
+            if(ci) params.append('ci', ci);
+            if(cp && cp !== '---') params.append('cp', cp);
+            if(b) params.append('b', b);
+            if(d) params.append('d', d);
+            if(tc) params.append('tc', tc);
+
+            const shareUrl = `${baseUrl}?${params.toString()}`;
+            
+            // API pública y estable de QR sin dependencias locales pesadas
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(shareUrl)}`;
+            document.getElementById('qrCodeImg').src = qrApiUrl;
+        }
+
+        // Reconstruir el estado de la reserva si se accede escaneando el QR (parámetros de URL)
+        function loadFromUrlQuery() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.toString() === "") return; // No hay datos que prellenar
+
+            if (params.has('n')) document.getElementById('nombre').value = params.get('n');
+            if (params.has('f')) document.getElementById('fecha').value = params.get('f');
+            if (params.has('p')) document.getElementById('personas').value = params.get('p');
+            if (params.has('ci')) document.getElementById('checkin').value = params.get('ci');
+            if (params.has('cp')) document.getElementById('checkpoint').value = params.get('cp');
+            if (params.has('b')) document.getElementById('balance').value = params.get('b');
+            if (params.has('d')) document.getElementById('divisa').value = params.get('d');
+            if (params.has('tc')) document.getElementById('tipoCambio').value = params.get('tc');
+            
+            if (params.has('a')) {
+                const actSelect = document.getElementById('actividad');
+                actSelect.value = params.get('a');
+                // Si la actividad no existe en el catálogo dinámico por algún cambio, forzar selección a "Otros"
+                if (actSelect.value !== params.get('a')) {
+                    actSelect.value = "Otros";
+                    document.getElementById('otraActividad').value = params.get('a');
+                }
+            }
+            if (params.has('oa')) {
+                document.getElementById('otraActividad').value = params.get('oa');
+            }
+
+            // Forzar actualización visual de la tarjeta
+            syncPreview();
+        }
+
+        // Event Listeners para automatización en tiempo real
+        document.getElementById('reserveForm').addEventListener('input', syncPreview);
+        document.getElementById('actividad').addEventListener('change', syncPreview);
+        document.getElementById('tipoCambio').addEventListener('change', syncPreview);
+        document.getElementById('divisa').addEventListener('change', syncPreview);
+
+        // Inicialización de la App
+        initFormOptions();
+        fetchActivities();
+    </script>
+</body>
+</html>
