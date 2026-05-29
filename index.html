@@ -122,10 +122,6 @@
 
                 <div class="space-y-5">
                     
-                    <div id="wrap-pv-imagen" class="hidden w-full h-44 overflow-hidden rounded-xl border border-zinc-100 shadow-inner bg-zinc-50">
-                        <img id="pv-imagen" src="" alt="Embarcación" class="w-full h-full object-cover">
-                    </div>
-
                     <div class="flex justify-between items-start">
                         <div class="space-y-4 w-full">
                             <div>
@@ -216,9 +212,6 @@
     <script>
         const SHEET_ID = '1NFNkPrPkN2ATZrNfEe6RqJzQTC17i3lq4UKgywJ8O10';
         const TSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=tsv`;
-        
-        // Enlace corregido apuntando directamente a la raíz de tu repositorio
-        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/beamazingcolors/Reservas/main/';
 
         window.catalogoActividades = {};
 
@@ -267,7 +260,6 @@
                 const idxCapacidad = headers.indexOf('capacidad de personas');
                 const idxDescriptivo = headers.indexOf('descriptivo');
                 const idxIncluye = headers.indexOf('incluye');
-                const idxCodigo = headers.indexOf('codigo');
 
                 if (idxNombre === -1) throw new Error('Falta columna estructural "Nombre"');
 
@@ -282,8 +274,7 @@
                             pies: idxPies !== -1 && cols[idxPies] ? cols[idxPies].trim() : "",
                             capacidad: idxCapacidad !== -1 && cols[idxCapacidad] ? cols[idxCapacidad].trim() : "",
                             descriptivo: idxDescriptivo !== -1 && cols[idxDescriptivo] ? cols[idxDescriptivo].trim() : "",
-                            incluye: idxIncluye !== -1 && cols[idxIncluye] ? cols[idxIncluye].trim() : "" ,
-                            codigoImg: idxCodigo !== -1 && cols[idxCodigo] ? cols[idxCodigo].trim() : ""
+                            incluye: idxIncluye !== -1 && cols[idxIncluye] ? cols[idxIncluye].trim() : ""
                         };
 
                         let opt = document.createElement('option');
@@ -335,19 +326,8 @@
             const wPies = document.getElementById('wrap-pv-pies');
             const wCap = document.getElementById('wrap-pv-capacidad');
             const wInc = document.getElementById('wrap-pv-incluye');
-            
-            const pvImg = document.getElementById('pv-imagen');
-            const wImg = document.getElementById('wrap-pv-imagen');
 
             if (meta && actSel !== "Otros") {
-                if (meta.codigoImg) {
-                    pvImg.src = GITHUB_BASE_URL + meta.codigoImg;
-                    wImg.classList.remove('hidden');
-                } else {
-                    wImg.classList.add('hidden');
-                    pvImg.src = '';
-                }
-
                 if (meta.descriptivo) {
                     pvDesc.textContent = meta.descriptivo;
                     pvDesc.classList.remove('hidden');
@@ -375,8 +355,6 @@
             } else {
                 pvDesc.classList.add('hidden');
                 pvFicha.classList.add('hidden');
-                wImg.classList.add('hidden');
-                pvImg.src = '';
             }
 
             let txtEquiv = "---";
