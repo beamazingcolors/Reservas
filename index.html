@@ -42,10 +42,17 @@
                         <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Fecha</label>
                         <input type="date" id="fecha" required class="w-full max-w-full block px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
                     </div>
-                    <div class="min-w-0">
-                        <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Pax (1-80)</label>
-                        <select id="personas" required class="w-full max-w-full block px-3 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
-                        </select>
+                    <div class="grid grid-cols-2 gap-2 min-w-0">
+                        <div>
+                            <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1 truncate">Adultos</label>
+                            <select id="adultos" required class="w-full max-w-full block px-2 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1 truncate">Menores (4-11)</label>
+                            <select id="menores" required class="w-full max-w-full block px-2 py-2 border border-zinc-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950">
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -160,7 +167,7 @@
                             <p id="pv-fecha" class="text-sm font-medium text-zinc-900">---</p>
                         </div>
                         <div class="min-w-0">
-                            <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Total de Pasajeros</p>
+                            <p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-0.5">Distribución de Pasajeros</p>
                             <p id="pv-personas" class="text-sm font-medium text-zinc-900">---</p>
                         </div>
                     </div>
@@ -215,12 +222,33 @@
 
         window.catalogoActividades = {};
 
+        function formatarFecha(fechaStr) {
+            if (!fechaStr || fechaStr === '---') return '---';
+            const partes = fechaStr.split('-');
+            if (partes.length !== 3) return fechaStr;
+            const meses = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            const anio = partes[0];
+            const mesIdx = parseInt(partes[1], 10) - 1;
+            const dia = parseInt(partes[2], 10);
+            return `${dia} de ${meses[mesIdx]} de ${anio}`;
+        }
+
         function initFormOptions() {
-            const pSel = document.getElementById('personas');
+            const aSel = document.getElementById('adultos');
             for (let i = 1; i <= 80; i++) {
                 let opt = document.createElement('option');
-                opt.value = i; opt.textContent = `${i} ${i === 1 ? 'Persona' : 'Personas'}`;
-                pSel.appendChild(opt);
+                opt.value = i; opt.textContent = `${i} ${i === 1 ? 'Adulto' : 'Adultos'}`;
+                aSel.appendChild(opt);
+            }
+
+            const mSel = document.getElementById('menores');
+            for (let i = 0; i <= 80; i++) {
+                let opt = document.createElement('option');
+                opt.value = i; opt.textContent = `${i} ${i === 1 ? 'Menor' : 'Menores'}`;
+                mSel.appendChild(opt);
             }
 
             const cSel = document.getElementById('checkin');
@@ -304,7 +332,9 @@
             const actSel = document.getElementById('actividad').value;
             const otraAct = document.getElementById('otraActividad').value;
             const fecha = document.getElementById('fecha').value || '---';
-            const pax = document.getElementById('personas').value;
+            const adultos = parseInt(document.getElementById('adultos').value) || 1;
+            const menores = parseInt(document.getElementById('menores').value) || 0;
+            const totalPax = adultos + menores;
             const checkin = document.getElementById('checkin').value;
             const checkpoint = document.getElementById('checkpoint').value || '---';
             const balance = parseFloat(document.getElementById('balance').value) || 0;
@@ -381,31 +411,38 @@
                 wPvNotas.classList.add('hidden');
             }
 
-            let codigo = "ACT-XXXXXX-" + pax;
+            let codigo = "ACT-XXXXXX-" + totalPax;
             if (fecha !== '---') {
                 const p = fecha.split('-');
-                codigo = `ACT-${p[0].substring(2)}${p[1]}${p[2]}-${pax}`;
+                codigo = `ACT-${p[0].substring(2)}${p[1]}${p[2]}-${totalPax}`;
             }
             document.getElementById('confirmacion').value = codigo;
             document.getElementById('pv-nombre').textContent = cliente;
-            document.getElementById('pv-fecha').textContent = fecha;
-            document.getElementById('pv-personas').textContent = `${pax} Pax`;
+            document.getElementById('pv-fecha').textContent = formatarFecha(fecha);
+            
+            let txtDistribucion = `${adultos} ${adultos === 1 ? 'Adulto' : 'Adultos'}`;
+            if (menores > 0) {
+                txtDistribucion += ` / ${menores} ${menores === 1 ? 'Menor' : 'Menores'}`;
+            }
+            document.getElementById('pv-personas').textContent = txtDistribucion;
+            
             document.getElementById('pv-checkin').textContent = `${checkin} hrs`;
             document.getElementById('pv-checkpoint').textContent = checkpoint;
             document.getElementById('pv-balance').textContent = `${balance.toLocaleString()} ${divisa}`;
             document.getElementById('pv-confirmacion').textContent = codigo;
 
-            actualizarQR(cliente, actSel, otraAct, fecha, pax, checkin, checkpoint, balance, divisa, tc, notasTxt);
+            actualizarQR(cliente, actSel, otraAct, fecha, adultos, menores, checkin, checkpoint, balance, divisa, tc, notasTxt);
         }
 
-        function actualizarQR(n, a, oa, f, p, ci, cp, b, d, tc, no) {
+        function actualizarQR(n, a, oa, f, ad, mn, ci, cp, b, d, tc, no) {
             const baseUrl = window.location.origin + window.location.pathname;
             const q = new URLSearchParams();
             if(n && n!=='---') q.append('n', n);
             if(a) q.append('a', a);
             if(a==='Otros' && oa) q.append('oa', oa);
             if(f && f!='---') q.append('f', f);
-            if(p) q.append('p', p);
+            if(ad) q.append('ad', ad);
+            if(mn) q.append('mn', mn);
             if(ci) q.append('ci', ci);
             if(cp && cp!=='---') q.append('cp', cp);
             if(b) q.append('b', b);
@@ -425,7 +462,9 @@
 
             if (q.has('n')) document.getElementById('nombreCliente').value = q.get('n');
             if (q.has('f')) document.getElementById('fecha').value = q.get('f');
-            if (q.has('p')) document.getElementById('personas').value = q.get('p');
+            if (q.has('ad')) document.getElementById('adultos').value = q.get('ad');
+            if (q.has('mn')) document.getElementById('menores').value = q.get('mn');
+            if (q.has('p') && !q.has('ad')) document.getElementById('adultos').value = q.get('p'); // Retrocompatibilidad
             if (q.has('ci')) document.getElementById('checkin').value = q.get('ci');
             if (q.has('cp')) document.getElementById('checkpoint').value = q.get('cp');
             if (q.has('b')) document.getElementById('balance').value = q.get('b');
@@ -491,6 +530,8 @@
 
         document.getElementById('reserveForm').addEventListener('input', syncPreview);
         document.getElementById('actividad').addEventListener('change', syncPreview);
+        document.getElementById('adultos').addEventListener('change', syncPreview);
+        document.getElementById('menores').addEventListener('change', syncPreview);
         document.getElementById('divisa').addEventListener('change', syncPreview);
         document.getElementById('tipoCambio').addEventListener('change', syncPreview);
 
